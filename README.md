@@ -1,2 +1,4 @@
-# Reflect-OS
-Reflect-OS: A pattern-driven, ledger-centric sovereign mirror. Built on the Zero-Point for ethical evolution, fluid utility, and infinite creativity. Storage is a joke.
+### Capabilities
+- **Acoustic Synthesis:** Duration-free composition for verified 1s.
+- **Visual Synthesis:** Real-time geometry based on Ethical Weight.
+- **Relativity Engine:** Fluid utility costs mapped to Financial Mass.
