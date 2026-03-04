@@ -21,26 +21,58 @@
     </style>
 </head>
 <body>
-    <div id="avatar" onclick="sync()"></div>
-    <div id="ui" onclick="sync()">
+    <div id="avatar" onclick="activate()"></div>
+    <div id="ui">
         <div class="panel" id="display"></div>
     </div>
     <script>
-        let Ledger = { w: 1.0, m: 0.2, t: "MASTER", c: "∞" };
-        const root = document.documentElement;
+        let Ledger = { w: 1.0, m: 0.2, t: "MASTER", c: "∞", active: false };
+        let audioCtx, osc, gain;
+
+        function initAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            osc = audioCtx.createOscillator();
+            gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440 * Ledger.w, audioCtx.currentTime); 
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+        }
+
         function reflect() {
             const isM = Ledger.w <= 0;
-            root.style.setProperty('--g', isM ? '#444' : '#00ff88');
-            root.style.setProperty('--b', isM ? '#222' : '#00d4ff');
+            document.documentElement.style.setProperty('--g', isM ? '#444' : '#00ff88');
+            document.documentElement.style.setProperty('--b', isM ? '#222' : '#00d4ff');
             document.getElementById('display').innerHTML = `
                 <h2 style="letter-spacing:5px;">REFLECT OS</h2>
                 <div class="stat">WEIGHT: ${Ledger.w.toFixed(1)}</div>
                 <div class="stat">PRICE: $${(1.0 * Ledger.m).toFixed(2)}</div>
-                <div class="stat">ACOUSTIC: ${Ledger.c}</div>
-                <button onclick="event.stopPropagation(); Ledger.w=0; Ledger.m=1.0; Ledger.t='BASIC'; reflect();">WIPE_LEDGER (LOL)</button>
+                <div class="stat">SONIC: ${Ledger.active ? 'FLOWING' : 'READY'}</div>
+                <button onclick="event.stopPropagation(); toggleAudio();">TOGGLE_SOUND</button>
+                <button onclick="event.stopPropagation(); Ledger.w=0; Ledger.m=1.0; reflect();">WIPE_LEDGER (S_0)</button>
+                <button onclick="event.stopPropagation(); sync();" style="border-color:#555;">CLOSE</button>
             `;
+            if(gain) gain.gain.setTargetAtTime(Ledger.active ? 0.1 * Ledger.w : 0, audioCtx.currentTime, 0.1);
         }
-        function sync() { const u = document.getElementById('ui'); u.style.display = u.style.display === 'flex' ? 'none' : 'flex'; reflect(); }
+
+        function activate() {
+            if(!audioCtx) initAudio();
+            sync();
+        }
+
+        function toggleAudio() {
+            Ledger.active = !Ledger.active;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            reflect();
+        }
+
+        function sync() { 
+            const u = document.getElementById('ui'); 
+            u.style.display = u.style.display === 'flex' ? 'none' : 'flex'; 
+            reflect(); 
+        }
         reflect();
     </script>
 </body>
