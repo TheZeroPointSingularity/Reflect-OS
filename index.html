@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reflect OS</title>
+    <style>
+        :root { --g: #00ff88; --b: #00d4ff; --w: 1.0; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: monospace; color: #fff; }
+        #avatar { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 120px; height: 120px; border-radius: 50%; cursor: pointer;
+            background: radial-gradient(circle, #fff 0%, var(--g) 30%, transparent 70%);
+            box-shadow: 0 0 50px var(--b); animation: pulse 2s infinite ease-in-out;
+            z-index: 10; transition: 0.5s;
+        }
+        #ui { position: absolute; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 5; }
+        .panel { border: 1px solid var(--g); padding: 40px; text-align: left; min-width: 300px; }
+        .stat { margin: 15px 0; letter-spacing: 2px; font-size: 0.8rem; }
+        button { background: none; border: 1px solid var(--b); color: var(--b); padding: 10px; cursor: pointer; width: 100%; margin-top: 10px; }
+        @keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.05); } }
+    </style>
+</head>
+<body>
+    <div id="avatar" onclick="sync()"></div>
+    <div id="ui" onclick="sync()">
+        <div class="panel" id="display"></div>
+    </div>
+    <script>
+        let Ledger = { w: 1.0, m: 0.2, t: "MASTER", c: "∞" };
+        const root = document.documentElement;
+        function reflect() {
+            const isM = Ledger.w <= 0;
+            root.style.setProperty('--g', isM ? '#444' : '#00ff88');
+            root.style.setProperty('--b', isM ? '#222' : '#00d4ff');
+            document.getElementById('display').innerHTML = `
+                <h2 style="letter-spacing:5px;">REFLECT OS</h2>
+                <div class="stat">WEIGHT: ${Ledger.w.toFixed(1)}</div>
+                <div class="stat">PRICE: $${(1.0 * Ledger.m).toFixed(2)}</div>
+                <div class="stat">ACOUSTIC: ${Ledger.c}</div>
+                <button onclick="event.stopPropagation(); Ledger.w=0; Ledger.m=1.0; Ledger.t='BASIC'; reflect();">WIPE_LEDGER (LOL)</button>
+            `;
+        }
+        function sync() { const u = document.getElementById('ui'); u.style.display = u.style.display === 'flex' ? 'none' : 'flex'; reflect(); }
+        reflect();
+    </script>
+</body>
+</html>
